@@ -11,4 +11,6 @@ import scrapy
 class QiubaispiderItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    pass
+    id = scrapy.Field()
+    title = scrapy.Field()
+    spot = scrapy.Field()

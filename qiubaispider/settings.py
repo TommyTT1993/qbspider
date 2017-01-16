@@ -14,12 +14,11 @@ BOT_NAME = 'qiubaispider'
 SPIDER_MODULES = ['qiubaispider.spiders']
 NEWSPIDER_MODULE = 'qiubaispider.spiders'
 
-
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'qiubaispider (+http://www.yourdomain.com)'
+USER_AGENT = 'User-Agent:Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
