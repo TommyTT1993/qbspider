@@ -17,7 +17,7 @@ class QdSpider(BaseSpider):
     }
 
     def start_requests(self):
-        url = 'http://www.qiushibaike.com/article/118326810'
+        url = 'http://www.qiushibaike.com/article/118373800'
         self._cur_index += 1
         yield Request(url, callback=self.parse, headers=self.headers, cookies={"__cur_art_index":self._cur_index})
 
@@ -35,13 +35,12 @@ class QdSpider(BaseSpider):
             # give up img
             if thumb:
                 return
-            item['title'] = html.find('div',attrs={"class":"content"}).string.strip().strip('\n')
+            item['title'] = html.find('div',attrs={"class":"content"}).get_text().strip().strip('\n')
             item['id'] = response.url.split('/')[-1]
             span = html.find('span', attrs={"class":"stats-vote"}).find('i').string
             if str(span).isdigit():
                 item['spot'] = int(span)
                 yield item
         except Exception as e:
-            print(e)
             pass
             # eat

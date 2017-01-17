@@ -39,4 +39,4 @@ class FilterPipeline(object):
         if not self.reg.search(title):
             return item
         else:
-            raise DropItem("find filter word don't add in!")
+            pass
