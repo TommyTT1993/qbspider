@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
 from scrapy.http import Request
 from scrapy.spiders import BaseSpider
 from bs4 import BeautifulSoup
 from qiubaispider.items import QiubaispiderItem
+import re
 
 class QdSpider(BaseSpider):
     name = "QB"
@@ -17,20 +19,28 @@ class QdSpider(BaseSpider):
     }
 
     def start_requests(self):
-        url = 'http://www.qiushibaike.com/article/118373800'
+        url = 'http://www.qiushibaike.com/article/118399071'
         self._cur_index += 1
         yield Request(url, callback=self.parse, headers=self.headers, cookies={"__cur_art_index":self._cur_index})
 
-
+    def verfy(self, text):
+        v = re.findall(r"\"([a-zA-Z0-9]{32})\"", text)[0]
+        return v
     def parse(self, response):
         try:
+            verfy = None
+            if str(response.body).find("setCookie") != -1 and str(response.body).find("verify") != -1:
+                verfy = self.verfy(str(response.body))
+            if verfy:
+                yield Request(response.url, callback=self.parse, headers=self.headers, cookies={"__cur_art_index":self._cur_index, "verify":verfy}, dont_filter=True)
+                return
             html = BeautifulSoup(response.body, 'html.parser')
             nexturl = html.find('input', attrs={"id":"articlePreLink"}).attrs
             nextid = nexturl['value'].split('/')[-1]
-            for i in range(-10, 10):
-                nexturl = "%s%s"%("http://www.qiushibaike.com/article/", nextid + i)
+            for i in range(-20, 20):
+                nexturl = "%s%s"%("http://www.qiushibaike.com/article/", int(nextid) + i)
                 self._cur_index += 1
-                yield Request(nexturl, callback=self.parse, headers=self.headers, cookies={"__cur_art_index":self._cur_index})
+                yield Request(nexturl, callback=self.parse, headers=self.headers, cookies={"__cur_art_index":self._cur_index}, errback=self.ignore)
 
             item = QiubaispiderItem()
             thumb = html.find("div", attrs={"class":"thumb"})
@@ -46,3 +56,6 @@ class QdSpider(BaseSpider):
         except Exception as e:
             print(e)
             # eat
+
+    def ignore(self, request):
+        pass
