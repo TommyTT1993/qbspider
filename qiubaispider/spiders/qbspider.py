@@ -31,6 +31,10 @@ class QdSpider(BaseSpider):
             yield Request(nexturl, callback=self.parse, headers=self.headers, cookies={"__cur_art_index":self._cur_index})
 
             item = QiubaispiderItem()
+            thumb = html.find("div", attrs={"class":"thumb"})
+            # give up img
+            if thumb:
+                return
             item['title'] = html.find('div',attrs={"class":"content"}).string.strip().strip('\n')
             item['id'] = response.url.split('/')[-1]
             span = html.find('span', attrs={"class":"stats-vote"}).find('i').string

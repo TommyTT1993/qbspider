@@ -31,7 +31,7 @@ class FilterPipeline(object):
 
     def __init__(self):
         super(FilterPipeline, self).__init__()
-        self.filter_word = u"糗事百科|糗百|糗友|割"
+        self.filter_word = u"糗事百科|糗百|糗友|割|匿了|必须匿|糗事"
         self.reg = re.compile(self.filter_word)
 
     def process_item(self, item, spider):
