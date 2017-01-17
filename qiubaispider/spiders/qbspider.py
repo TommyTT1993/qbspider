@@ -26,9 +26,11 @@ class QdSpider(BaseSpider):
         try:
             html = BeautifulSoup(response.body, 'html.parser')
             nexturl = html.find('input', attrs={"id":"articlePreLink"}).attrs
-            nexturl = "%s%s"%("http://www.qiushibaike.com", nexturl['value'])
-            self._cur_index += 1
-            yield Request(nexturl, callback=self.parse, headers=self.headers, cookies={"__cur_art_index":self._cur_index})
+            nextid = nexturl['value'].split('/')[-1]
+            for i in range(-10, 10):
+                nexturl = "%s%s"%("http://www.qiushibaike.com/article/", nextid + i)
+                self._cur_index += 1
+                yield Request(nexturl, callback=self.parse, headers=self.headers, cookies={"__cur_art_index":self._cur_index})
 
             item = QiubaispiderItem()
             thumb = html.find("div", attrs={"class":"thumb"})
@@ -42,5 +44,5 @@ class QdSpider(BaseSpider):
                 item['spot'] = int(span)
                 yield item
         except Exception as e:
-            pass
+            print(e)
             # eat

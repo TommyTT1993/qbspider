@@ -21,9 +21,13 @@ class QiubaispiderPipeline(object):
         super(QiubaispiderPipeline, self).__init__()
 
     def process_item(self, item, spider):
-        db = self.mongo.get_database("spider")
-        collection = db.get_collection("qiubai")
-        collection.insert_one({"_id":item['id'], "title":item['title'], "spot":item['spot']})
+        try:
+            db = self.mongo.get_database("spider")
+            collection = db.get_collection("qiubai")
+            collection.insert_one({"_id":item['id'], "title":item['title'], "spot":item['spot']})
+        except Exception as e:
+            print(e)
+            pass
         return item
 
 
