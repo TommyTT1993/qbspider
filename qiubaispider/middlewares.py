@@ -7,6 +7,17 @@
 
 from scrapy import signals
 
+import base64
+
+
+class ProxyMiddleware(object):
+    def process_request(self, request, spider):
+        pass
+        # request.meta['proxy'] = "http://119.163.244.249:9999"
+        # print('test')
+        # proxy_user_pass = "用户名:帐号"
+        # encoded_user_pass = base64.encodestring(proxy_user_pass)
+        # request.headers['Proxy-Authorization'] = 'Basic ' + encoded_user_pass
 
 class QiubaispiderSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,

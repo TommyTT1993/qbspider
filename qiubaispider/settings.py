@@ -21,12 +21,12 @@ USER_AGENT = 'User-Agent:Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trid
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 128 
+# CONCURRENT_REQUESTS = 128
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 0.05
+DOWNLOAD_DELAY = 0.2
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -51,9 +51,9 @@ DOWNLOAD_DELAY = 0.05
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'qiubaispider.middlewares.MyCustomDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+   'qiubaispider.middlewares.ProxyMiddleware': 543,
+}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
