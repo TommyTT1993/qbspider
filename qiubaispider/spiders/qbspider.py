@@ -1,23 +1,43 @@
+from scrapy.http import Request
 from scrapy.spiders import BaseSpider
-from scrapy.selector import HtmlXPathSelector
+from bs4 import BeautifulSoup
 from qiubaispider.items import QiubaispiderItem
 
 class QdSpider(BaseSpider):
     name = "QB"
-    start_urls = [
-        "http://www.qiushibaike.com/article/118393179",
-    ]
+    _cur_index = 1000
+    headers = {
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip,deflate",
+        "Accept-Language": "en-US,en;q=0.8,zh-TW;q=0.6,zh;q=0.4",
+        "Connection": "keep-alive",
+        "Content-Type": " application/x-www-form-urlencoded; charset=UTF-8",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36",
+        "Referer": "http://www.qiushibaike.com/"
+    }
+
+    def start_requests(self):
+        url = 'http://www.qiushibaike.com/article/118326810'
+        self._cur_index += 1
+        yield Request(url, callback=self.parse, headers=self.headers, cookies={"__cur_art_index":self._cur_index})
+
 
     def parse(self, response):
-        hxs = HtmlXPathSelector(response)
-        title = hxs.select('//title/text()').extract()
-        spot = hxs.select("//span[@class='stats-vote']/i[1]/text()").extract()
-        item = QiubaispiderItem()
-        if spot and title and len(title) > 0 and len(spot) > 0:
-            item['title'] = title[0].strip().strip('\n')
+        try:
+            html = BeautifulSoup(response.body, 'html.parser')
+            nexturl = html.find('input', attrs={"id":"articlePreLink"}).attrs
+            nexturl = "%s%s"%("http://www.qiushibaike.com", nexturl['value'])
+            self._cur_index += 1
+            yield Request(nexturl, callback=self.parse, headers=self.headers, cookies={"__cur_art_index":self._cur_index})
+
+            item = QiubaispiderItem()
+            item['title'] = html.find('div',attrs={"class":"content"}).string.strip().strip('\n')
             item['id'] = response.url.split('/')[-1]
-            item['spot'] = spot[0]
-        return item
-
-
-
+            span = html.find('span', attrs={"class":"stats-vote"}).find('i').string
+            if str(span).isdigit():
+                item['spot'] = int(span)
+                yield item
+        except Exception as e:
+            print(e)
+            pass
+            # eat

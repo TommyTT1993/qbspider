@@ -4,7 +4,9 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 from pymongo import MongoClient
+from scrapy.exceptions import DropItem
 import qiubaispider
+import re
 
 class QiubaispiderPipeline(object):
     def __init__(self):
@@ -23,3 +25,18 @@ class QiubaispiderPipeline(object):
         collection = db.get_collection("qiubai")
         collection.insert_one({"_id":item['id'], "title":item['title'], "spot":item['spot']})
         return item
+
+
+class FilterPipeline(object):
+
+    def __init__(self):
+        super(FilterPipeline, self).__init__()
+        self.filter_word = u"糗事百科|糗百|糗友|割"
+        self.reg = re.compile(self.filter_word)
+
+    def process_item(self, item, spider):
+        title = item['title']
+        if not self.reg.search(title):
+            return item
+        else:
+            raise DropItem("find filter word don't add in!")
